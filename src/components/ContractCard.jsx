@@ -42,7 +42,7 @@ export default function ContractCard({ entry, index }) {
         <div>
           {/* Contract address */}
           <a href={`${EXPLORER}/address/${entry.address}`} target="_blank" rel="noreferrer"
-            style={{ fontFamily: 'var(--mono)', fontSize: 12, color: 'var(--green)', textDecoration: 'none', letterSpacing: '.02em' }}>
+            style={{ fontFamily: 'var(--mono)', fontSize: 12, color: 'var(--accent)', textDecoration: 'none', letterSpacing: '.02em' }}>
             {sh(entry.address)}
           </a>
           {entry.tx_date && (
@@ -54,7 +54,7 @@ export default function ContractCard({ entry, index }) {
 
         {/* GEN amount */}
         <div style={{ textAlign: 'right', flexShrink: 0 }}>
-          <div style={{ fontFamily: 'var(--font)', fontWeight: 800, fontSize: '1.3rem', color: 'var(--yellow)', letterSpacing: '-.02em', lineHeight: 1 }}>
+          <div style={{ fontFamily: 'var(--font)', fontWeight: 800, fontSize: '1.3rem', color: 'var(--warn)', letterSpacing: '-.02em', lineHeight: 1 }}>
             {gen} <span style={{ fontSize: 12, fontWeight: 400 }}>GEN</span>
           </div>
           <div style={{ fontFamily: 'var(--mono)', fontSize: 9, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '.1em', marginTop: 3 }}>

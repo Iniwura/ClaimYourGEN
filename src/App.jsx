@@ -3,8 +3,10 @@ import ContractCard from './components/ContractCard.jsx'
 import { readContract, writeContract, waitTx, CHAIN_ID, NET } from './lib/gl.js'
 import { CONTRACT_ADDR, FAUCET, EXPLORER, sh, weiToGen } from './lib/config.js'
 
-const GL_LOGO = 'https://cdn.prod.website-files.com/68108d68d0fc0cfa0c26dbc9/691359baf22648f4efd074b2_GenLayer_Logo_White_Cropped.svg'
-const GL_MARK = 'https://cdn.prod.website-files.com/68108d68d0fc0cfa0c26dbc9/691359b88e6b1fd0260a9fea_GenLayer_Mark_White.svg'
+const GL_LOGO   = 'https://cdn.prod.website-files.com/68108d68d0fc0cfa0c26dbc9/691359baf22648f4efd074b2_GenLayer_Logo_White_Cropped.svg'
+const GL_MARK   = 'https://cdn.prod.website-files.com/68108d68d0fc0cfa0c26dbc9/691359b88e6b1fd0260a9fea_GenLayer_Mark_White.svg'
+const MOCHI_IDEA = 'https://raw.githubusercontent.com/genlayer-foundation/genlayer-mascot/main/assets/stickers/mochi-sticker-idea.png'
+const MOCHI_MAIN = 'https://raw.githubusercontent.com/genlayer-foundation/genlayer-mascot/main/assets/renders/mochi-main.png'
 
 function Toast({ msg, type, onClear }) {
   useEffect(() => { if (!msg) return; const t = setTimeout(onClear, 5000); return () => clearTimeout(t) }, [msg])
@@ -12,8 +14,8 @@ function Toast({ msg, type, onClear }) {
   return (
     <div style={{
       position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)',
-      background: 'var(--card2)', border: `1px solid ${type === 'err' ? 'rgba(239,68,68,.4)' : 'var(--green-border)'}`,
-      color: type === 'err' ? '#F87171' : 'var(--green)',
+      background: 'var(--card2)', border: `1px solid ${type === 'err' ? 'rgba(239,68,68,.4)' : 'var(--border2)'}`,
+      color: type === 'err' ? '#F87171' : 'var(--accent)',
       padding: '10px 22px', borderRadius: 100, fontFamily: 'var(--mono)', fontSize: 11,
       zIndex: 999, animation: 'fin .3s var(--ease)',
     }}>{msg}</div>
@@ -32,12 +34,12 @@ function ScanOverlay() {
       <div style={{ position: 'relative', width: 200, height: 200, border: '1px solid var(--green-border)', borderRadius: 12, overflow: 'hidden' }}>
         <div style={{
           position: 'absolute', left: 0, right: 0, height: 2,
-          background: 'linear-gradient(90deg, transparent, var(--green), transparent)',
+          background: 'linear-gradient(90deg, transparent, var(--accent), transparent)',
           animation: 'scan 2s ease-in-out infinite',
-          boxShadow: '0 0 12px rgba(16,185,129,.6)',
+          boxShadow: '0 0 12px rgba(226,232,240,.4)',
         }} />
         <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <img src={GL_MARK} alt="GenLayer" style={{ width: 48, opacity: .4 }} />
+          <img src={MOCHI_IDEA} alt="Mochi" style={{ width: 64, objectFit: 'contain', opacity: .7, animation: 'pulse 2s ease-in-out infinite' }} />
         </div>
         {/* Corner brackets */}
         {[['0','0','br'], ['0','auto','bl'], ['auto','0','tr'], ['auto','auto','tl']].map(([t,r,key]) => (
@@ -45,10 +47,10 @@ function ScanOverlay() {
             position: 'absolute', top: t === '0' ? 8 : 'auto', bottom: t === 'auto' ? 8 : 'auto',
             left: r === '0' ? 8 : 'auto', right: r === 'auto' ? 8 : 'auto',
             width: 16, height: 16,
-            borderTop: (t === '0') ? '2px solid var(--green)' : 'none',
-            borderBottom: (t === 'auto') ? '2px solid var(--green)' : 'none',
-            borderLeft: (r === '0') ? '2px solid var(--green)' : 'none',
-            borderRight: (r === 'auto') ? '2px solid var(--green)' : 'none',
+            borderTop: (t === '0') ? '2px solid var(--accent)' : 'none',
+            borderBottom: (t === 'auto') ? '2px solid var(--accent)' : 'none',
+            borderLeft: (r === '0') ? '2px solid var(--accent)' : 'none',
+            borderRight: (r === 'auto') ? '2px solid var(--accent)' : 'none',
           }} />
         ))}
       </div>
@@ -64,7 +66,7 @@ function ScanOverlay() {
         <div style={{ marginTop: 16, display: 'flex', justifyContent: 'center', gap: 6 }}>
           {[0, 1, 2].map(i => (
             <div key={i} style={{
-              width: 6, height: 6, borderRadius: '50%', background: 'var(--green)',
+              width: 6, height: 6, borderRadius: '50%', background: 'var(--accent)',
               animation: `pulse 1.2s ease-in-out ${i * 0.2}s infinite`,
             }} />
           ))}
@@ -173,7 +175,7 @@ export default function App() {
           <span style={{ fontFamily: 'var(--font)', fontWeight: 800, fontSize: 15, letterSpacing: '-.02em' }}>
             ClaimYourGEN
           </span>
-          <span style={{ fontFamily: 'var(--mono)', fontSize: 9, letterSpacing: '.12em', background: 'var(--green-dim)', border: '1px solid var(--green-border)', color: 'var(--green)', padding: '2px 8px', borderRadius: 100 }}>
+          <span style={{ fontFamily: 'var(--mono)', fontSize: 9, letterSpacing: '.12em', background: 'var(--green-dim)', border: '1px solid var(--green-border)', color: 'var(--accent)', padding: '2px 8px', borderRadius: 100 }}>
             BRADBURY
           </span>
         </div>
@@ -183,8 +185,8 @@ export default function App() {
             {totalScans} scans run
           </div>
           {connected
-            ? <div style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--green)', background: 'var(--green-dim)', border: '1px solid var(--green-border)', padding: '5px 14px', borderRadius: 100, display: 'flex', alignItems: 'center', gap: 6 }}>
-                <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--green)', display: 'inline-block', animation: 'pulse 2s infinite' }} />
+            ? <div style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--accent)', background: 'var(--accent-dim)', border: '1px solid var(--border2)', padding: '5px 14px', borderRadius: 100, display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--accent)', display: 'inline-block', animation: 'pulse 2s infinite' }} />
                 {sh(account)}
               </div>
             : <button className="btn btn-outline" style={{ fontSize: 12, padding: '7px 16px' }} onClick={connect}>
@@ -201,16 +203,16 @@ export default function App() {
           <div style={{
             display: 'inline-flex', alignItems: 'center', gap: 6,
             fontFamily: 'var(--mono)', fontSize: 10, letterSpacing: '.15em', textTransform: 'uppercase',
-            color: 'var(--green)', border: '1px solid var(--green-border)', background: 'var(--green-dim)',
+            color: 'var(--accent)', border: '1px solid var(--border2)', background: 'var(--accent-dim)',
             padding: '5px 16px', borderRadius: 100, marginBottom: 20,
           }}>
-            <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--green)', display: 'inline-block', animation: 'blink 2s infinite' }} />
+            <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--accent)', display: 'inline-block', animation: 'blink 2s infinite' }} />
             GenLayer Bradbury — GEN Recovery Tool
           </div>
 
           <h1 style={{ fontFamily: 'var(--font)', fontWeight: 800, fontSize: 'clamp(2.2rem,6vw,4rem)', letterSpacing: '-.05em', lineHeight: .95, marginBottom: 16 }}>
             Find your<br />
-            <span style={{ color: 'var(--green)' }}>stuck GEN.</span>
+            <span style={{ color: 'var(--accent)' }}>stuck GEN.</span>
           </h1>
 
           <p style={{ fontSize: 14, color: 'var(--text2)', maxWidth: 480, margin: '0 auto 28px', lineHeight: 1.8 }}>
@@ -218,12 +220,12 @@ export default function App() {
           </p>
 
           {connected ? (
-            <button className="btn btn-green" style={{ fontSize: 14, padding: '12px 28px' }}
+            <button className="btn btn-accent" style={{ fontSize: 14, padding: '12px 28px' }}
               disabled={scanning} onClick={runScan}>
               {scanning ? <><span className="spin-el" style={{ marginRight: 8 }} />Scanning...</> : '🔍 Scan My Wallet'}
             </button>
           ) : (
-            <button className="btn btn-green" style={{ fontSize: 14, padding: '12px 28px' }} onClick={connect}>
+            <button className="btn btn-accent" style={{ fontSize: 14, padding: '12px 28px' }} onClick={connect}>
               Connect Wallet to Scan
             </button>
           )}
@@ -231,7 +233,7 @@ export default function App() {
           {cached && result && (
             <div style={{ marginTop: 12, fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--muted)' }}>
               Showing cached scan from {result.scanned_at?.slice(0, 10) || 'earlier'} ·{' '}
-              <span style={{ color: 'var(--green)', cursor: 'pointer' }} onClick={runScan}>
+              <span style={{ color: 'var(--accent)', cursor: 'pointer' }} onClick={runScan}>
                 Run fresh scan
               </span>
             </div>
@@ -247,8 +249,8 @@ export default function App() {
               display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 24,
             }}>
               {[
-                { val: contracts.length, label: 'Contracts Found', color: hasContracts ? 'var(--yellow)' : 'var(--green)' },
-                { val: `${totalGen} GEN`, label: 'Total Sent', color: 'var(--green)' },
+                { val: contracts.length, label: 'Contracts Found', color: hasContracts ? 'var(--yellow)' : 'var(--accent)' },
+                { val: `${totalGen} GEN`, label: 'Total Sent', color: 'var(--accent)' },
                 { val: result.scanned_at?.slice(0, 10) || 'Just now', label: 'Last Scanned', color: 'var(--text2)' },
               ].map(({ val, label, color }) => (
                 <div key={label} style={{
@@ -269,7 +271,7 @@ export default function App() {
                 fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--text2)', lineHeight: 1.7,
                 display: 'flex', alignItems: 'center', gap: 10,
               }}>
-                <span style={{ color: 'var(--green)', fontSize: 16 }}>ℹ</span>
+                <span style={{ color: 'var(--accent)', fontSize: 16 }}>ℹ</span>
                 {result.scan_note}
               </div>
             )}
@@ -297,7 +299,7 @@ export default function App() {
                     How to recover your GEN
                   </div>
                   <div style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--text2)', lineHeight: 1.8, marginBottom: 16 }}>
-                    Each contract above needs a recovery function. If you own that contract, click <strong style={{ color: 'var(--green)' }}>Copy Code</strong> on the card and add it to your contract source, then redeploy. If someone else owns it, share the code with them.
+                    Each contract above needs a recovery function. If you own that contract, click <strong style={{ color: 'var(--accent)' }}>Copy Code</strong> on the card and add it to your contract source, then redeploy. If someone else owns it, share the code with them.
                   </div>
                   <div style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--muted)' }}>
                     The recovery snippet is a standard module — any GenLayer contract can add it in under 10 lines.
@@ -311,7 +313,7 @@ export default function App() {
                 background: 'var(--card)',
               }}>
                 <div style={{ fontSize: '2.5rem', marginBottom: 14 }}>✅</div>
-                <div style={{ fontFamily: 'var(--font)', fontWeight: 800, fontSize: '1rem', color: 'var(--green)', marginBottom: 8 }}>
+                <div style={{ fontFamily: 'var(--font)', fontWeight: 800, fontSize: '1rem', color: 'var(--accent)', marginBottom: 8 }}>
                   No stuck GEN found
                 </div>
                 <div style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--muted)' }}>
@@ -337,7 +339,7 @@ export default function App() {
                 { n: '04', t: 'Copy recovery code', d: 'Add 10 lines to the contract and redeploy to unlock' },
               ].map(({ n, t, d }) => (
                 <div key={n} style={{ background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 'var(--r)', padding: '16px 18px' }}>
-                  <div style={{ fontFamily: 'var(--font)', fontWeight: 800, fontSize: '1.5rem', color: 'var(--green)', letterSpacing: '-.04em', marginBottom: 6 }}>{n}</div>
+                  <div style={{ fontFamily: 'var(--font)', fontWeight: 800, fontSize: '1.5rem', color: 'var(--accent)', letterSpacing: '-.04em', marginBottom: 6 }}>{n}</div>
                   <div style={{ fontFamily: 'var(--font)', fontWeight: 700, fontSize: 13, marginBottom: 5 }}>{t}</div>
                   <div style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--muted)', lineHeight: 1.6 }}>{d}</div>
                 </div>
