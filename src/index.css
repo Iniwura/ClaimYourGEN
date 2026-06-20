@@ -1,0 +1,83 @@
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --green:       #10B981;
+  --green-dim:   rgba(16,185,129,.1);
+  --green-border:rgba(16,185,129,.2);
+  --yellow:      #F59E0B;
+  --red:         #EF4444;
+  --bg:          #050F0A;
+  --bg2:         #0A1A10;
+  --card:        #0E2016;
+  --card2:       #122A1C;
+  --border:      rgba(16,185,129,.12);
+  --border2:     rgba(16,185,129,.22);
+  --text:        #E8FFF4;
+  --text2:       #7ABFA0;
+  --muted:       #3A6B52;
+  --font:        'Syne', sans-serif;
+  --mono:        'DM Mono', monospace;
+  --r:           10px;
+  --ease:        cubic-bezier(.16,1,.3,1);
+}
+
+html, body, #root {
+  min-height: 100%;
+  font-family: var(--mono);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+}
+
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(ellipse 800px 600px at 50% 10%, rgba(16,185,129,.07) 0%, transparent 60%),
+    radial-gradient(ellipse 400px 300px at 90% 80%, rgba(16,185,129,.04) 0%, transparent 60%);
+}
+
+body::after {
+  content: '';
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background-image:
+    linear-gradient(rgba(16,185,129,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(16,185,129,.04) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+  font-family: var(--font); font-weight: 700; font-size: 13px;
+  padding: 10px 20px; cursor: pointer; border-radius: var(--r);
+  transition: all 150ms var(--ease); border: none;
+}
+.btn:disabled { opacity: .4; cursor: not-allowed; }
+.btn-green   { background: var(--green); color: #050F0A; }
+.btn-green:hover:not(:disabled) { background: #059669; transform: translateY(-1px); box-shadow: 0 4px 20px rgba(16,185,129,.35); }
+.btn-outline { background: transparent; border: 1.5px solid var(--border2); color: var(--text2); }
+.btn-outline:hover:not(:disabled) { border-color: var(--green); color: var(--green); }
+.btn-copy { background: var(--card2); border: 1px solid var(--border); color: var(--text2); font-size: 11px; padding: 6px 12px; }
+.btn-copy:hover { border-color: var(--green); color: var(--green); }
+
+.fi {
+  width: 100%; background: var(--bg); border: 1.5px solid var(--border);
+  color: var(--text); font-family: var(--mono); font-size: 12px;
+  padding: 10px 14px; border-radius: var(--r); outline: none;
+  transition: border-color 150ms var(--ease);
+}
+.fi:focus { border-color: var(--green); }
+.fi::placeholder { color: var(--muted); }
+
+@keyframes fin    { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+@keyframes pop    { from{transform:scale(.94);opacity:0} to{transform:scale(1);opacity:1} }
+@keyframes spin   { to{transform:rotate(360deg)} }
+@keyframes scan   { 0%{top:0} 100%{top:100%} }
+@keyframes pulse  { 0%,100%{opacity:1} 50%{opacity:.3} }
+@keyframes blink  { 0%,100%{opacity:1} 50%{opacity:0} }
+
+.spin-el {
+  display: inline-block; width: 16px; height: 16px;
+  border: 2px solid var(--border); border-top-color: var(--green);
+  border-radius: 50%; animation: spin .7s linear infinite;
+}
