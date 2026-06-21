@@ -91,7 +91,7 @@ export default function ContractCard({ entry, index }) {
           </div>
         </div>
         <button className="btn btn-copy" onClick={copy} style={{ flexShrink: 0 }}>
-          {copied ? '✓ Copied' : '📋 Copy Code'}
+          {copied ? 'Copied' : 'Copy Code'}
         </button>
       </div>
     </div>

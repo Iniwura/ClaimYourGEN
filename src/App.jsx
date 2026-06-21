@@ -197,7 +197,7 @@ export default function App() {
           <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:20, flexWrap:'wrap', marginBottom:12 }}>
             {connected
               ? <button className="btn btn-accent" style={{ fontSize:14, padding:'12px 28px' }} disabled={scanning} onClick={runScan}>
-                  {scanning ? <><span className="spin-el" style={{ marginRight:8 }} />Scanning...</> : result ? '↻ Rescan' : '🔍 Scan My Wallet'}
+                  {scanning ? <><span className="spin-el" style={{ marginRight:8 }} />Scanning...</> : result ? 'Rescan' : 'Scan My Wallet'}
                 </button>
               : <button className="btn btn-accent" style={{ fontSize:14, padding:'12px 28px' }} onClick={connect}>
                   Connect Wallet to Scan
@@ -261,7 +261,7 @@ export default function App() {
             {/* Health note */}
             {result.health_note && (
               <div style={{ background:'var(--accent-dim)', border:'1px solid var(--border2)', borderRadius:'var(--r)', padding:'12px 18px', marginBottom:20, fontFamily:'var(--mono)', fontSize:11, color:'var(--accent)', display:'flex', gap:10, alignItems:'center' }}>
-                <span style={{ fontSize:16 }}>ℹ</span> {result.health_note}
+                <span style={{ fontFamily:'var(--mono)', fontSize:12, color:'var(--accent)' }}>[i]</span> {result.health_note}
               </div>
             )}
 
@@ -279,7 +279,7 @@ export default function App() {
               </>
             ) : (
               <div style={{ textAlign:'center', padding:'40px 24px', border:'1px solid var(--border)', borderRadius:'var(--r)', background:'var(--card)', marginBottom:28 }}>
-                <div style={{ fontSize:'2rem', marginBottom:10 }}>✅</div>
+                
                 <div style={{ fontFamily:'var(--font)', fontWeight:800, fontSize:'.95rem', color:'var(--accent)', marginBottom:6 }}>No stuck GEN found</div>
                 <div style={{ fontFamily:'var(--mono)', fontSize:11, color:'var(--muted)' }}>Your GEN is clean on Bradbury.</div>
               </div>
@@ -295,15 +295,15 @@ export default function App() {
             </div>
             <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(190px,1fr))', gap:10 }}>
               {[
-                { icon:'💰', t:'GEN Balance',        d:'Current wallet balance on Bradbury' },
-                { icon:'🔍', t:'Stuck GEN',          d:'Contracts that received your GEN and may be holding it' },
-                { icon:'⏳', t:'Pending Txs',        d:'How many transactions are queued or unfinalized' },
-                { icon:'⛽', t:'Gas Spent',          d:'Total fees paid across all Bradbury transactions' },
-                { icon:'📊', t:'Activity Score',     d:'0-100 health score based on your on-chain history' },
-                { icon:'🗓', t:'First Transaction',  d:'When you first appeared on Bradbury' },
+                { icon:'[GEN]', t:'GEN Balance',        d:'Current wallet balance on Bradbury' },
+                { icon:'[SCAN]', t:'Stuck GEN',          d:'Contracts that received your GEN and may be holding it' },
+                { icon:'[PEND]', t:'Pending Txs',        d:'How many transactions are queued or unfinalized' },
+                { icon:'[GAS]', t:'Gas Spent',          d:'Total fees paid across all Bradbury transactions' },
+                { icon:'[SCORE]', t:'Activity Score',     d:'0-100 health score based on your on-chain history' },
+                { icon:'[DATE]', t:'First Transaction',  d:'When you first appeared on Bradbury' },
               ].map(({ icon, t, d }) => (
                 <div key={t} style={{ background:'var(--card)', border:'1px solid var(--border)', borderRadius:'var(--r)', padding:'16px 18px' }}>
-                  <div style={{ fontSize:'1.4rem', marginBottom:8 }}>{icon}</div>
+                  <div style={{ fontFamily:'var(--mono)', fontSize:9, color:'var(--muted)', letterSpacing:'.1em', textTransform:'uppercase', marginBottom:6 }}>{icon}</div>
                   <div style={{ fontFamily:'var(--font)', fontWeight:700, fontSize:13, marginBottom:5 }}>{t}</div>
                   <div style={{ fontFamily:'var(--mono)', fontSize:11, color:'var(--muted)', lineHeight:1.6 }}>{d}</div>
                 </div>

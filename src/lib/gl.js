@@ -108,7 +108,7 @@ export async function readContract(addr, method, args = [], useCache = false) {
     if (cached && Date.now() - cached.ts < _CACHE_TTL) return cached.val
   }
   const from = window._glAccount || '0x0000000000000000000000000000000000000000'
-  const data = encodeCalldataMsgpack(method, args, false)
+  const data = encodeCalldata(method, args, false)
   let lastErr
   for (let attempt = 0; attempt < 4; attempt++) {
     if (attempt > 0) {
@@ -154,7 +154,7 @@ export async function readContract(addr, method, args = [], useCache = false) {
   }
   throw lastErr
 }
-export async function writeContract(contractAddr, account, method, args = []) {
+export async function writeContract(contractAddr, account, method, args = [], valueWei = 0n) {
   const cd   = encodeCalldata(method, args, false)
   const CONS = '0x4F33a39DC5Ac7c5B9F2E7aB137F7c50b8f9B9339'
   const pad  = v => v.toString(16).padStart(64, '0')
@@ -165,9 +165,11 @@ export async function writeContract(contractAddr, account, method, args = []) {
     pad(Math.floor(Date.now() / 1000) + 3600) +
     pad(ch.length / 2) +
     ch.padEnd(Math.ceil(ch.length / 64) * 64, '0')
+  const txParams = { from: account, to: CONS, data: txData, gas: '0x493E0' }
+  if (valueWei && BigInt(valueWei) > 0n) txParams.value = '0x' + BigInt(valueWei).toString(16)
   return window.ethereum.request({
     method: 'eth_sendTransaction',
-    params: [{ from: account, to: CONS, data: txData, gas: '0x493E0' }],
+    params: [txParams],
   })
 }
 
