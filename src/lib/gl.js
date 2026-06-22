@@ -1,7 +1,27 @@
-// Official genlayer-js SDK — replaces all custom calldata encoding
 import { createClient } from 'genlayer-js'
-import { testnetBradbury } from 'genlayer-js/chains'
-import { TransactionStatus } from 'genlayer-js/types'
+
+// Chain config inline — avoids genlayer-js/chains subpath import issue with Rollup
+const testnetBradbury = {
+  id:   4221,
+  name: 'GenLayer Bradbury',
+  rpcUrls: {
+    default: { http: ['https://rpc-bradbury.genlayer.com'] },
+    public:  { http: ['https://rpc-bradbury.genlayer.com'] },
+  },
+  nativeCurrency: { name: 'GEN', symbol: 'GEN', decimals: 18 },
+  blockExplorers: {
+    default: { name: 'GenExplorer', url: 'https://explorer-bradbury.genlayer.com' },
+  },
+}
+
+// TransactionStatus inline — avoids genlayer-js/types subpath import issue
+const TransactionStatus = {
+  PENDING:       'PENDING',
+  ACCEPTED:      'ACCEPTED',
+  FINALIZED:     'FINALIZED',
+  CANCELED:      'CANCELED',
+  UNDETERMINED:  'UNDETERMINED',
+}
 
 export const CHAIN_ID = '0x107D'
 export const NET = {
@@ -12,12 +32,8 @@ export const NET = {
   blockExplorerUrls: ['https://explorer-bradbury.genlayer.com'],
 }
 
-// Create a genlayer-js client for the given account
 function getClient(account = '0x0000000000000000000000000000000000000000') {
-  return createClient({
-    chain:   testnetBradbury,
-    account: account,
-  })
+  return createClient({ chain: testnetBradbury, account })
 }
 
 // ── Read ──────────────────────────────────────────────────────────────────
@@ -49,7 +65,7 @@ export async function readContract(contractAddr, method, args = [], useCache = f
     } catch(e) {
       lastErr = e
       const msg = (e.message || '').toLowerCase()
-      if (msg.includes('rate limit') || msg.includes('429')) { continue }
+      if (msg.includes('rate limit') || msg.includes('429')) continue
       throw e
     }
   }
