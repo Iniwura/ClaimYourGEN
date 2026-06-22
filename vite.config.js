@@ -3,12 +3,11 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
-  optimizeDeps: {
-    include: ['genlayer-js'],
-  },
   build: {
-    commonjsOptions: {
-      transformMixedEsModules: true,
+    rollupOptions: {
+      output: {
+        manualChunks: undefined,
+      },
     },
   },
 })
