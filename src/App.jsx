@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import ContractCard from './components/ContractCard.jsx'
-import { readContract, writeContract, waitTx, CHAIN_ID, NET } from './lib/gl.js'
+import { readContract, writeContract, waitTx } from './lib/gl.js'
 import { CONTRACT_ADDR, FAUCET, EXPLORER, sh, weiToGen } from './lib/config.js'
 
 const GL_LOGO    = 'https://cdn.prod.website-files.com/68108d68d0fc0cfa0c26dbc9/691359baf22648f4efd074b2_GenLayer_Logo_White_Cropped.svg'
@@ -97,18 +97,17 @@ export default function App() {
   }
 
   async function connect() {
-    if (!window.ethereum) { notify('Install MetaMask', 'err'); return }
+    if (!window.ethereum) { notify('Install MetaMask or a compatible wallet', 'err'); return }
     try {
-      const accs  = await window.ethereum.request({ method:'eth_requestAccounts' })
-      const chain = await window.ethereum.request({ method:'eth_chainId' })
-      if (chain !== CHAIN_ID) {
-        try { await window.ethereum.request({ method:'wallet_switchEthereumChain', params:[{chainId:CHAIN_ID}] }) }
-        catch(e) { if(e.code===4902||e.code===-32603) await window.ethereum.request({ method:'wallet_addEthereumChain', params:[NET] }) }
-      }
+      const accs = await window.ethereum.request({ method:'eth_requestAccounts' })
+      if (!accs?.[0]) { notify('No accounts found', 'err'); return }
       setAccount(accs[0]); setConnected(true); window._glAccount = accs[0]
       notify('Connected', 'ok')
-      window.ethereum.on('accountsChanged', a => { if (!a.length) { setAccount(''); setConnected(false) } })
-    } catch(e) { notify(e.message, 'err') }
+      window.ethereum.on('accountsChanged', a => {
+        if (!a.length) { setAccount(''); setConnected(false); window._glAccount = '' }
+        else { setAccount(a[0]); window._glAccount = a[0] }
+      })
+    } catch(e) { notify(e.message || 'Connection failed', 'err') }
   }
 
   async function loadCachedScan(addr) {
@@ -126,22 +125,38 @@ export default function App() {
     if (!CONTRACT_ADDR) { notify('Contract not deployed', 'err'); return }
     setScanning(true); setResult(null); setCached(false)
     try {
-      // Submit transaction
-      const hash = await writeContract(CONTRACT_ADDR, account, 'scan_wallet', [account])
-      // Wait for tx to be ACCEPTED on chain — overlay stays the whole time
-      await waitTx(hash, () => {}, 50)
-      // Then load results — overlay still showing
+      // Submit tx — if wallet rejects this throws immediately
+      let hash
+      try {
+        hash = await writeContract(CONTRACT_ADDR, account, 'scan_wallet', [account])
+      } catch(walletErr) {
+        const msg = walletErr.message || 'Wallet rejected transaction'
+        notify(msg.includes('reject') || msg.includes('cancel') ? 'Transaction cancelled' : msg, 'err')
+        setScanning(false)
+        return
+      }
+      notify('Transaction submitted — waiting for confirmation...', 'ok')
+      // Wait for on-chain confirmation — overlay stays visible
+      try {
+        await waitTx(hash, () => notify('Still processing on Bradbury...', 'ok'), 50)
+      } catch(txErr) {
+        notify('Transaction failed: ' + (txErr.message || 'unknown'), 'err')
+        setScanning(false)
+        return
+      }
+      // Load results
       const loaded = await loadCachedScan(account)
       if (!loaded) {
-        // Try one more time after a brief wait
-        await new Promise(r => setTimeout(r, 3000))
+        await new Promise(r => setTimeout(r, 4000))
         await loadCachedScan(account)
       }
       await loadStats()
-      // Scroll to results
       setTimeout(() => resultsRef.current?.scrollIntoView({ behavior:'smooth', block:'start' }), 300)
-    } catch(e) { notify(e.message, 'err') }
-    finally { setScanning(false) }
+    } catch(e) {
+      notify(e.message || 'Scan failed', 'err')
+    } finally {
+      setScanning(false)
+    }
   }
 
   useEffect(() => {
@@ -160,7 +175,7 @@ export default function App() {
       <header style={{ position:'sticky', top:0, zIndex:100, height:56, display:'flex', alignItems:'center', gap:12, padding:'0 clamp(1rem,4vw,2.5rem)', background:'rgba(7,8,15,.92)', backdropFilter:'blur(20px)', borderBottom:'1px solid var(--border)' }}>
         <div style={{ display:'flex', alignItems:'center', gap:8 }}>
           <img src={GL_MARK} alt="GL" style={{ width:24, height:24 }} />
-          <span style={{ fontFamily:'var(--font)', fontWeight:800, fontSize:15, letterSpacing:'-.02em' }}>ClaimYourGEN</span>
+          <span style={{ fontFamily:'var(--font)', fontWeight:800, fontSize:15, letterSpacing:'-.02em' }}>GenScanner</span>
           <span style={{ fontFamily:'var(--mono)', fontSize:9, letterSpacing:'.12em', background:'var(--accent-dim)', border:'1px solid var(--border2)', color:'var(--accent)', padding:'2px 8px', borderRadius:100 }}>BRADBURY</span>
         </div>
         <div style={{ marginLeft:'auto', display:'flex', alignItems:'center', gap:12 }}>
@@ -317,7 +332,7 @@ export default function App() {
       <footer style={{ display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:12, padding:'20px clamp(1rem,4vw,2.5rem)', borderTop:'1px solid var(--border)', fontFamily:'var(--mono)', fontSize:10, color:'var(--muted)', marginTop:40 }}>
         <div style={{ display:'flex', alignItems:'center', gap:8 }}>
           <img src={GL_LOGO} alt="GL" style={{ height:14, opacity:.4 }} />
-          ClaimYourGEN · Wallet Health Scanner · Bradbury Testnet
+          GenScanner · Wallet Health Scanner · Bradbury Testnet
         </div>
         <div style={{ display:'flex', gap:14 }}>
           <a href={FAUCET} target="_blank" rel="noreferrer" style={{ color:'var(--muted)', textDecoration:'none' }}>Faucet</a>
