@@ -73,9 +73,32 @@ export async function readContract(contractAddr, method, args = [], useCache = f
 }
 
 // ── Write ─────────────────────────────────────────────────────────────────
+async function switchToBradbury() {
+  try {
+    await window.ethereum.request({
+      method: 'wallet_switchEthereumChain',
+      params: [{ chainId: '0x107D' }],
+    })
+  } catch(e) {
+    if (e.code === 4902 || e.code === -32603) {
+      await window.ethereum.request({
+        method: 'wallet_addEthereumChain',
+        params: [{
+          chainId:            '0x107D',
+          chainName:          'GenLayer Bradbury',
+          rpcUrls:            ['https://rpc-bradbury.genlayer.com'],
+          nativeCurrency:     { name:'GEN', symbol:'GEN', decimals:18 },
+          blockExplorerUrls:  ['https://explorer-bradbury.genlayer.com'],
+        }],
+      })
+    } else { throw e }
+  }
+}
+
 export async function writeContract(contractAddr, account, method, args = [], valueWei = 0n) {
+  // Switch wallet to Bradbury before sending
+  await switchToBradbury()
   const client = getClient(account)
-  await client.connect('testnetBradbury')
   return await client.writeContract({
     address:      contractAddr,
     functionName: method,
